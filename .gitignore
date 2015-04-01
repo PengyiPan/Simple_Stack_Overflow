@@ -1,4 +1,4 @@
-# Object files
+# Objet files
 *.o
 *.ko
 *.obj
@@ -30,3 +30,6 @@
 
 # Debug files
 *.dSYM/
+
+
+.DS_Store
