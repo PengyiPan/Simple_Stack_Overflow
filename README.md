@@ -19,7 +19,7 @@ if (check_filename_length(len))
 	strncpy(filename, start, len);
 else
 	return NULL;
-int check_filename_length(byte len) {
+int check_filename_length(***byte*** len) {
 	if (len < 100)
 	return 1;
 return 0;
