@@ -67,7 +67,7 @@ Since our shellcode is longer than 100 bytes (which is the length of the buffer 
 
 Finally we came to the point where we are ready to go. Before that however, since we did not know the exact address of the buffer filename nor our “NOP slide” in this case, we had to guess until we got it correctly. Using the hints given on Piazza, we successfully narrowed down the possible address range to a moderate size, but testing all the addresses in that range manually was still a pain.
 
-In order to do this tedious job, we created an attack_generator.c program that takes the address guessed as input and output our attack string. Combining with the bash script we wrote find_return_address.sh, we were able to locate a possible return address that we can use ***0xBFFFFE88***.
+In order to do this tedious job, we created an ***attack_generator.c*** program that takes the address guessed as input and output our attack string. Combining with the bash script we wrote ***find_return_address.sh***, we were able to locate a possible return address that we can use ***0xBFFFFE88***.
 
 ##Step 6: Launch the attack
 
