@@ -1,17 +1,17 @@
 
-Simple Buffer-overflow Attack
+#                             Simple Buffer-overflow Attack
 Group members: Yubo Tian (yt65), Pengyi Pan (pp83), and Chun Sun Baak (cb276)
 
-Overview:
+###Overview:
 
 This assignment aims to compromise a Linux webserver (cps110.cs.duke.edu:8097) running buggy code using buffer-overflow attack. In this document, we will describe the our steps, thought process, the obstacles we faced, and the means to address them that eventually led us to successfully compromise the webserver.
 
-Step 1: Find the vulnerable point in the webserver code
+###Step 1: Find the vulnerable point in the webserver code
 
 First, we discovered a vulnerable point in the server’s code regarding bound-checking of a buffer. Specifically, filename[100] is declared as a char[100] in the webserver code, and although there is a bound-checking algorithm that seemingly checks whether the input to filename is smaller than or equal to 100 bytes, its method has a loophole that allows us to inject a string longer than 100, thus effectively overwriting the return address. Specifically, while the actual “length” variable has the type int, in the check function, it is casted into the type unsigned char, whose size is smaller than int. In doing so, the length is illicitly truncated--by gaming this blind spot, we are able to pass the test with an input string that is longer than 100: we just need to make sure that the binary representation of the integer’s right-most eight digits is less than 100, which is 01100100 in binary. Thus, we made sure that the length of our input fits in one of the range (0-100; 256-356; 778-868). 
 
 Here is the part in the server code where vulnerability exists.
-
+'''
 char filename[100];
 typedef unsigned char byte;
 int len = (int) (end - start);
@@ -24,8 +24,8 @@ if (len < 100)
 return 1;
 return 0;
 }
-
-Step 2: Create shellcode
+'''
+##Step 2: Create shellcode
 
 After locating the part of the code in which to inject our code in step one, we then started working on a shellcode whose functionalities would help us compromise the host machine. We basically need the shellcode to perform two functions: connect our machine to the victim, and open a shell for us. 
 
@@ -38,7 +38,7 @@ Compiling the two files and using gdb (disas), we get the assembly code for the 
 
 Using nasm to compile the .asm files, we get two hex opcode that are concatenated into our final shellcode, which is in file final_shellcode.c. This shellcode, when injected to the host machine, promises to do the following. First, it opens port number 5074, and makes the host machine listens on the port. By doing so, our server can connect to that machine using that port, allowing us to directly communicate to that machine. Moreover, the shellcode, contains dup2() syscall that effectively puts the control of the remote host’s stdin, stdout, and stderr in our hands. Finally, the shellcode contains execve syscall and in so doing spawns a shell.
 
-Step 3: Test the shellcode using a basic test
+##Step 3: Test the shellcode using a basic test
 
 Before anything, we made sure that the shellcode works when we run it on face value (without needing any buffer-overflow attack). After obtaining the op-codes of the shellcode from the resource above, we tested the shellcode using the c code below (which was also available in the above source). The shellcode worked when tested.
 
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 }
 '''
 
-Step 4: Test the buffer-overflow attack locally
+##Step 4: Test the buffer-overflow attack locally
 
 Now that we have the message to be sent, we simulated the buffer-overflow attack by opening the webserver’s code in our local host, and made sure that the shellcode correctly worked when we injected it to our local host through buffer overflow. 
 
@@ -76,5 +76,5 @@ The following is purely FUN.
 
 
 
-This document was last modified on March 30, 2015
+                                                                              This document was last modified on March 30, 2015
 
